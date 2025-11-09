@@ -1,0 +1,10 @@
+import random
+
+def gen_pass(n):
+    return ''.join(random.choice("+-/*!&$#?=@<>") for i in range(n))
+
+def gen_emoji():
+    return random.choice(["😀","🙂","😆","🤣"])
+
+def flip_coin():
+    return random.choice(["HEADS","TAILS"])
