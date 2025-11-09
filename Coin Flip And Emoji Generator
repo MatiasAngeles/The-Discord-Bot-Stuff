@@ -1,0 +1,22 @@
+import discord
+from bot_logic import *
+from settings import settings
+
+intents = discord.Intents.default()
+intents.message_content = True
+client = discord.Client(intents=intents)
+
+@client.event
+async def on_ready():
+    print(f'Logged in as {client.user}')
+
+@client.event
+async def on_message(m):
+    if m.author == client.user: return
+    if m.content == '$hello': await m.channel.send('Hello!')
+    elif m.content == '$smile': await m.channel.send(gen_emodji())
+    elif m.content == '$coin': await m.channel.send(flip_coin())
+    elif m.content == '$pass': await m.channel.send(gen_pass(10))
+    else: await m.channel.send("Sorry, i can't play this command.")
+
+client.run(settings["TOKEN"])
