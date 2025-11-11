@@ -1,34 +1,44 @@
 from settings import settings
 import discord
-
+from discord.ext import commands
+# import * - es una forma rápida de importar todos los archivos de la biblioteca
 from bot_logic import *
 
-
+# La variable intents almacena los privilegios del bot
 intents = discord.Intents.default()
-
+# Activar el privilegio de lectura de mensajes
 intents.message_content = True
+# Una vez que el bot esté listo, ¡imprimirá su nombre!
+bot = commands.Bot(command_prefix="$", intents=intents)
 
-client = discord.Client(intents=intents)
-
-@client.event
+@bot.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    print(f'We have logged in as {bot.user}')
 
+@bot.command()
+async def hello(ctx):
+    await ctx.send('Hello. |:(')
 
+@bot.command()
+async def bye(ctx):
+    await ctx.send('😒')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello... :(')
-    elif message.content.startswith('$smile'):
-        await message.channel.send(gen_emodji())
-    elif message.content.startswith('$coin'):
-        await message.channel.send(flip_coin())
-    elif message.content.startswith('$pass'):
-        await message.channel.send(gen_pass(10))
-    else:
-        await message.channel.send("Sorry, i can't use that command.")
+@bot.command()
+async def password(ctx, cantidad: int):
+    await ctx.send(gen_pass(cantidad))
 
-client.run(settings["TOKEN"])
+@bot.group()
+async def cool(ctx):
+    """Says if a user is cool.
+
+    In reality this just checks if a subcommand is being invoked.
+    """
+    if ctx.invoked_subcommand is None:
+        await ctx.send(f'No, {ctx.subcommand_passed} is not cool')
+
+@cool.command(name='bot')
+async def _bot(ctx):
+    """Is the bot cool?"""
+    await ctx.send('Yes, the bot is cool.')
+
+bot.run("TOKEN GOES HERE")
