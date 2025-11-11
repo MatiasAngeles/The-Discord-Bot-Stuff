@@ -27,18 +27,4 @@ async def bye(ctx):
 async def password(ctx, cantidad: int):
     await ctx.send(gen_pass(cantidad))
 
-@bot.group()
-async def cool(ctx):
-    """Says if a user is cool.
-
-    In reality this just checks if a subcommand is being invoked.
-    """
-    if ctx.invoked_subcommand is None:
-        await ctx.send(f'No, {ctx.subcommand_passed} is not cool')
-
-@cool.command(name='bot')
-async def _bot(ctx):
-    """Is the bot cool?"""
-    await ctx.send('Yes, the bot is cool.')
-
 bot.run("TOKEN GOES HERE")
