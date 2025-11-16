@@ -1,14 +1,14 @@
 from settings import settings
 import discord
 from discord.ext import commands
-# import * - es una forma rápida de importar todos los archivos de la biblioteca
 from bot_logic import *
+import random
+import asyncio
 
-# La variable intents almacena los privilegios del bot
+# Intents del bot
 intents = discord.Intents.default()
-# Activar el privilegio de lectura de mensajes
 intents.message_content = True
-# Una vez que el bot esté listo, ¡imprimirá su nombre!
+
 bot = commands.Bot(command_prefix="$", intents=intents)
 
 @bot.event
@@ -26,5 +26,39 @@ async def bye(ctx):
 @bot.command()
 async def password(ctx, cantidad: int):
     await ctx.send(gen_pass(cantidad))
+
+@bot.command()
+async def guess(ctx):
+    await ctx.send('Guess a number between **1 and 10**.')
+
+    def is_correct(m):
+        return (
+            m.author == ctx.author and
+            m.channel == ctx.channel and
+            m.content.isdigit()
+        )
+
+    answer = random.randint(1, 10)
+
+    try:
+        guess_msg = await bot.wait_for('message', check=is_correct, timeout=5.0)
+    except asyncio.TimeoutError:
+        return await ctx.send(f'Sorry, you took too long. The number was **{answer}**.')
+
+    if int(guess_msg.content) == answer:
+        await ctx.send('That is correct.')
+    else:
+        await ctx.send(f'NO! The number was **{answer}**.')
+
+@bot.group()
+async def cool(ctx):
+    """Says if a user is cool."""
+    if ctx.invoked_subcommand is None:
+        await ctx.send(f'No, {ctx.subcommand_passed} is not cool')
+
+@cool.command(name='bot')
+async def _bot(ctx):
+    """Is the bot cool?"""
+    await ctx.send('Yes, the bot is cool.')
 
 bot.run("TOKEN GOES HERE")
